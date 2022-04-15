@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<import doc:name="Import" doc:id="2de60bdd-ba43-4ade-bd3c-8ee72a35d0e5" file="exp-gcart-api-imp.xml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="063a0a1e-d494-4682-a8be-dfb6990c03a4" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="b6b2024f-9c3b-4fab-924c-f0ce9dde5104" file="dev.yaml" />
+	<flow name="exp-gcart-api-hostingFlow-hosting" doc:id="c4a6d5d8-54c2-436e-9eb3-270eb9e1dbfa" >
+		<http:listener doc:name="Listener" doc:id="70cc55e5-c846-4d68-af83-47ebb81c11fd" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<flow-ref doc:name="Flow Reference" doc:id="5851f4bb-4d12-4a67-b66b-c6d97bda1a79" name="exp-gcart-api-main"/>
+	</flow>
+</mule>
