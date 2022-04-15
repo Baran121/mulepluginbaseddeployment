@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="928bf596-c328-4082-8c1b-0a67ff4a98ea" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<import doc:name="Import" doc:id="56953f26-1f5f-40e6-98f8-9d47387a86b5" file="sys-globalsap-api-imp.xml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="dfec0543-00c3-4876-a43c-999b6b01e148" file="dev.yaml" />
+	<import doc:name="Import" doc:id="201082f4-62e3-4177-a9fd-b9e5e99f73ab" file="sys-globalsap-api-MQTrigger.xml" />
+	<flow name="sys-gsap-api-hostingFlow" doc:id="9e930b69-9060-43d9-bc47-75d2a0f5fd05" >
+		<http:listener doc:name="Listener" doc:id="a1d852e8-a14b-4bb3-be92-636a07f2cef0" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<flow-ref doc:name="Flow Reference" doc:id="00aea86d-65cf-4315-ae81-c219a12dc98f" name="sys-globalsap-api-main"/>
+	</flow>
+</mule>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration_gsap" doc:name="HTTP Request configuration" doc:id="3ae78c20-c056-4c7b-9c42-5896bc803122" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<anypoint-mq:config name="Anypoint_MQ_Config1" doc:name="Anypoint MQ Config" doc:id="a3340a7a-7750-4055-adb6-594d793aa356" >
+		<anypoint-mq:connection clientId="bf83b7a4a8424cb4857346ce1a3472f3" clientSecret="729B2F861af8449EBDef8eF383e4A00F" />
+	</anypoint-mq:config>
+	<flow name="MQTriggerFlow_gsap" doc:id="e27b718d-ff5a-4f1a-85be-0f576042de57" maxConcurrency="2">
+		<anypoint-mq:subscriber doc:name="Subscriber" doc:id="9a68f726-4b60-4e05-8f38-4e7bfd9ee8cd" config-ref="Anypoint_MQ_Config1" destination="gsapQ">
+			<anypoint-mq:subscriber-type >
+				<anypoint-mq:polling fetchSize="2" >
+					<scheduling-strategy >
+						<fixed-frequency />
+					</scheduling-strategy>
+				</anypoint-mq:polling>
+			</anypoint-mq:subscriber-type>
+		</anypoint-mq:subscriber>
+		<logger level="INFO" doc:name="Logger" doc:id="06040bb8-3502-4c42-92a4-3fe80d135e2d" message="message received"/>
+		<ee:transform doc:name="Transform Message" doc:id="7d23b6a7-2d1d-4d00-ad45-82d35003a733" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+  "hid": "IRO001",
+  "fName": "Baranee",
+  "lName": "Mano",
+  "paymentMethods": [
+    {
+      "identifier": "IRA001",
+      "paymentMethodType": {
+        "medium": "DIGITAL",
+        "issuer": "INSTITUTION",
+        "name": "PayPal"
+      }
+    }
+  ],
+  "deliveryAddresses": [
+    {
+      "identifier": "IRA001",
+      "mailStopCode": "SE016",
+      "attention": "",
+      "type": "BILLING",
+      "recipient": "baraneemano@gmail.com",
+      "address": "Sokkampalayam",
+      "addressUnit": "Annur",
+      "secondaryAddress": "Coimbatore",
+      "city": "Coimbatore",
+      "state": "TN",
+      "postalCode": "641653",
+      "country": "India"
+    }
+  ]
+},
+{
+  "hid": "IRO002",
+  "fName": "John",
+  "lName": "Stu",
+  "paymentMethods": [
+    {
+      "identifier": "IRO002",
+      "paymentMethodType": {
+        "medium": "DIGITAL",
+        "issuer": "INSTITUTION",
+        "name": "PayPal"
+      }
+    }
+  ],
+  "deliveryAddresses": [
+    {
+      "identifier": "IRO002",
+      "mailStopCode": "",
+      "attention": "",
+      "type": "BILLING",
+      "recipient": "",
+      "address": "England",
+      "addressUnit": "England",
+      "secondaryAddress": "England",
+      "city": "England",
+      "state": "England",
+      "postalCode": "SE016",
+      "country": "UK"
+    }
+  ]
+}
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="2452d41f-f8e8-483e-9e91-bd6d2e5b6dd4" config-ref="HTTP_Request_configuration_gsap" path="/api/customers">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"api-name" : "sys-globalsap-api-main"
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="1c670082-90d3-4b17-a8c2-1963e2515e04" message="MQ Triggered"/>
+	</flow>
+</mule>

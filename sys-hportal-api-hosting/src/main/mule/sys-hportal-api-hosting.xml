@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<import doc:name="Import" doc:id="8a743146-29f4-4740-8f42-8f6ec74c2b45" file="sys-hubportal-api-imp.xml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="be8a6338-0968-455d-975e-5246f5f4e658" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="6c85e8b6-fe47-46e0-942e-f2beba35bb98" file="dev.yaml" />
+	<import doc:name="Import" doc:id="75a6ab6d-a742-4ddd-91d2-933e0a121e32" file="sys-hubportal-api-MQTrigger.xml" />
+	<flow name="sys-hportal-api-hostingFlow" doc:id="5a277f93-7284-4a9a-891d-41b06ccd3c4d" >
+		<http:listener doc:name="Listener" doc:id="ea9b325c-4a9d-40e8-86a8-223099caf0bc" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<flow-ref doc:name="Flow Reference" doc:id="1706b0bc-25c6-4b3c-876a-d0956131c659" name='#[attributes.headers["api-name"]]'/>
+	</flow>
+</mule>

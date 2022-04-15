@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<anypoint-mq:config name="Anypoint_MQ_Config2" doc:name="Anypoint MQ Config" doc:id="bf4e16b2-f3ba-4fe6-97d8-16a837c69bb8" >
+		<anypoint-mq:connection clientId="7da1b3c1b72c4361bb52401ceac8f465" clientSecret="E959F20606554Dd1AdC5406E90Af975b" />
+	</anypoint-mq:config>
+	<http:request-config name="HTTP_Request_configuration_hportal" doc:name="HTTP Request configuration" doc:id="3ae78c20-c056-4c7b-9c42-5896bc803122" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="MQTriggerFlow_hportal" doc:id="e27b718d-ff5a-4f1a-85be-0f576042de57" maxConcurrency="2">
+		<anypoint-mq:subscriber doc:name="Subscriber" doc:id="9a68f726-4b60-4e05-8f38-4e7bfd9ee8cd" config-ref="Anypoint_MQ_Config2" destination="hportalQ">
+			<anypoint-mq:subscriber-type >
+				<anypoint-mq:polling fetchSize="2" >
+					<scheduling-strategy >
+						<fixed-frequency />
+					</scheduling-strategy>
+				</anypoint-mq:polling>
+			</anypoint-mq:subscriber-type>
+		</anypoint-mq:subscriber>
+		<logger level="INFO" doc:name="Logger" doc:id="06040bb8-3502-4c42-92a4-3fe80d135e2d" message="message received"/>
+		<http:request method="GET" doc:name="Request" doc:id="2452d41f-f8e8-483e-9e91-bd6d2e5b6dd4" config-ref="HTTP_Request_configuration_hportal" path="/api/customers">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"api-name" : "sys-hubportal-api-main"
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="1c670082-90d3-4b17-a8c2-1963e2515e04" message="MQ Triggered"/>
+	</flow>
+</mule>
